@@ -1,0 +1,31 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+		<title>Fresnel Rendering</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<meta charset="utf-8"/>
+		<!--<script src="render.mjs" type="module"></script>-->
+		<script type="module">
+			import {render} from './render.mjs'
+			document.querySelector('#renderbtn').addEventListener('click', render)
+		</script>
+	</head> 
+	<body>
+		<div>
+			<div class="navigation">
+				<select class="select">
+					<option value="sphere">sphere</option>
+					<option value="box">box</option>
+				</select>
+				<select class="select">
+						<option value="chess pattern">chess pattern</option>
+						<option value="earth and sky">earth and sky</option>
+				</select> 
+				<input type="range" min="1" max="100" value="50" class="slider" id="index">
+				<button id="renderbtn">render</button> 
+			</div>
+			<canvas id="renderCanvas" width="700" height="700" style="border:1px solid #d3d3d3;">
+			Your browser does not support the HTML5 canvas tag.</canvas>
+		</div>
+	</body> 
+</html>
