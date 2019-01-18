@@ -100,6 +100,10 @@ export default class Vec{
     return this;
   }
 
+  print() {
+    console.log(`vec x:${this.x} y:${this.y} z:${this.z}`);
+  }
+
   static negative(a, b) {
     b.x = -a.x; b.y = -a.y; b.z = -a.z;
     return b;
