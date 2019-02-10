@@ -3,14 +3,14 @@ import {Ray} from './ray.mjs';
  
 export default class Camera{
   constructor(eye, at, up, resolution_width, resolution_height) {
-    this.eye = eye || new Vec(0,1,0);
-    this.at = at || new Vec(1,1,0);
+    this.eye = eye || new Vec(0,1,-8);
+    this.at = at || new Vec(0,1,0);
     this.up = up || new Vec(0,1,0);
     this.resolution = {width: resolution_width, height: resolution_height} || {width: 700, height: 700};
     this.height = 2;
     this.width = 2;
-    this.dir = this.at.subtract(this.eye);
-    this.u = this.dir.cross(this.up).unit();
+    this.dir = this.at.subtract(this.eye).unit();
+    this.u = this.up.cross(this.dir).unit();
     this.v = this.u.cross(this.dir).unit();
     this.zero = this.at.subtract(this.u.multiply(1)).subtract(this.v.multiply(1));
     this.inc_y = (this.v.multiply(2).multiply(this.width/2)).divide(this.resolution.width);
