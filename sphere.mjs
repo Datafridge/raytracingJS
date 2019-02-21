@@ -14,7 +14,7 @@ class Sphere{
   
     intersect(intersection_ray) {
       let normal = new Vec();
-      let epsilon = 0.002;
+      let epsilon = 0.000000000000001;
       let castray = intersection_ray.direction.subtract(intersection_ray.position);
       let a = castray.dot(castray);
       let origin_to_center_ray = intersection_ray.position.subtract(this.position);
@@ -43,7 +43,7 @@ class Sphere{
         } 
       } 
   
-      return {hit: 0, normal: normal, inout: "out"};     
+      return {hit: 0, normal: normal, color: new Vec(0,0,0)};     
     }
     
   }

@@ -17,11 +17,11 @@ export function render ()
 	var object = "sphere";
 	var index, color;
 
-	var camera = new Camera(new Vec(0,1,-10), new Vec(0,1,0), new Vec(0,1,0), 700, 700);
+	var camera = new Camera(new Vec(0,1,-3), new Vec(0,1,0), new Vec(0,1,0), 700, 700);
 	camera.print();
-	var sphere = new Sphere(new Vec(0,1,10), 1);
+	var sphere = new Sphere(new Vec(0,1,10), 2);
 
-	var light = new Light(new Vec(0,-8,10), new Vec(255,255,255));
+	var light = new Light(new Vec(2,10,10), new Vec(255,255,255));
 
 
 	for (let h = 0; h < height; h++) {
@@ -33,15 +33,16 @@ export function render ()
 			
 			let intersection = sphere.intersect(ray);
 
-			if((w===350&&h===350)||(w===0&&h===0)||(w===0&&h===699)||(w===699&&h===0)||(w===699&&h===699)) {ray.print();}
+			if((w===350&&h===350)||(w===325&&h===325)||(w===325&&h===375)||(w===375&&h===325)||(w===375&&h===375)) {ray.print();}
 
 			let shadowray = new Ray();
-			shadowray.position = ray.position.add(ray.direction.multiply(ray.distance));
-			shadowray.direction = light.position.subtract(shadowray.position).unit();
+			shadowray.position = ray.position.add(((ray.direction.subtract(ray.position)).multiply(ray.distance)).subtract(0.000000000001));
+			
+			shadowray.direction = light.position;
 
 			let shadowintersection = sphere.intersect(shadowray);
 
-			if((w===350&&h===350)||(w===300&&h===300)||(w===300&&h===400)||(w===400&&h===300)||(w===400&&h===400)) {shadowray.print();}
+			if((w===350&&h===350)||(w===325&&h===325)||(w===325&&h===375)||(w===375&&h===325)||(w===375&&h===375)) {shadowray.print();}
 
 			if (intersection.hit === 1 && shadowintersection.hit === 0) {
 				imageData.data[index + 0] = sphere.color.x;
@@ -49,7 +50,7 @@ export function render ()
    		 		imageData.data[index + 2] = sphere.color.z;
 				imageData.data[index + 3] = 255;
 			}
-			else if (intersection.hit === 1 && shadowintersection.hit === 1) {
+			else if (intersection.hit === 1 && (shadowintersection.hit === 1 || shadowintersection.hit === -1)) {
 				imageData.data[index + 0] = 0;
     			imageData.data[index + 1] = 0;
    		 		imageData.data[index + 2] = 0;
@@ -59,8 +60,12 @@ export function render ()
     			imageData.data[index + 1] = 255;
    		 		imageData.data[index + 2] = 255;
 				imageData.data[index + 3] = 255;
+			} else if (intersection.hit === -1) {
+				imageData.data[index + 0] = 0;
+    			imageData.data[index + 1] = 255;
+   		 		imageData.data[index + 2] = 0;
+				imageData.data[index + 3] = 255;
 			}
-				
 		}
 	}
 
