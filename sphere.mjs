@@ -7,19 +7,19 @@ class Sphere{
       this.radius = radius || 1;
       this.Ia = Ia || 0.15  // ambient
       this.kd = kd || new Vec(0.3,1,0.4); // diffuse coefficient
-      this.ks = ks || new Vec(0,0,0); // specular coefficient
+      this.ks = ks || new Vec(0.3,1,0.4); // specular coefficient
       this.pr = pr || 0.2; // reflectvity
-      this.n = n || 0.5;  // phong shininess
+      this.n = n || 100;  // phong shininess
       this.ref = ref || 0.5; // index of refraction
     }
   
-    intersect(intersection_ray, light) {
+    intersect(intersection_ray) {
       let hit = 0;
       let normal = new Vec();
       let reflection_ray = null;
       let refraction_ray = null;
 
-      let epsilon = 0.01;
+      let epsilon = 0.001;
       let castray = intersection_ray.direction.subtract(intersection_ray.position);
       let a = castray.dot(castray);
       let origin_to_center_ray = intersection_ray.position.subtract(this.position);
@@ -39,50 +39,25 @@ class Sphere{
             if(distance_2 < epsilon) {
               intersection_ray.distance = distance_2;
               normal = castray.multiply(intersection_ray.distance).subtract(this.position).unit();
-              return {hit: -1, normal: normal};
+              return {hit: -1, normal: normal, object:this};
             }
           } else {
             // hit
               intersection_ray.distance = distance_1;
-              //normal = castray.multiply(intersection_ray.distance).subtract(this.position).unit();
               
               hit = 1;
-              let intersection_point = intersection_ray.position.add(((intersection_ray.direction.subtract(intersection_ray.position)).multiply(intersection_ray.distance)).subtract(0.001));
+
+              let intersection_point = intersection_ray.position.add(((intersection_ray.direction.subtract(intersection_ray.position)).multiply(intersection_ray.distance)).subtract(0.0001));
               normal = intersection_point.subtract(this.position).unit();
-
-              //let normalray = new Ray(intersection_point, normal);
-              //normalray.print();
-              //calculate ambient part
-              let ambient_color = this.kd.multiply(this.Ia);
-
-              //calculate diffuse color
-              let intersect_to_light = light.position.subtract(intersection_point).unit();
-              let lDotNormal = intersect_to_light.dot(normal);
               
-              lDotNormal = lDotNormal < 0 ? 0.0 : lDotNormal;
-              //console.log(`lDotNormal: ${lDotNormal}`);
-
-              let diffuse_color = light.color.multiply(this.kd).multiply(lDotNormal);
-              
-              //let diffuse_color = (light.color.multiply(this.kd).divide(255)).multiply(lDotNormal);
-              //diffuse_color.print();
-
-
-              //let total_color = (ambient_color.add(diffuse_color)).multiply(255*4);
-              //if (diffuse_color.x > 255) diffuse_color.x = 255;
-              //if (diffuse_color.y > 255) diffuse_color.y = 255;
-              //if (diffuse_color.z > 255) diffuse_color.z = 255;
-
-              let total_color = diffuse_color.add(ambient_color);
-
               //calculate reflection ray
               reflection_ray = new Ray(intersection_point, intersection_ray.direction.subtract(normal.multiply(intersection_ray.direction.dot(normal)).multiply(2)).unit());
-              return {hit: 1, normal: normal, color: total_color.multiply(255), ray: intersection_ray, reflection_ray: reflection_ray, object:this, intersection_point: intersection_point}; 
+              return {hit: 1, normal: normal, reflection_ray: reflection_ray, intersection_point: intersection_point, distance: intersection_ray.distance, object:this}; 
           }
         } 
       } 
       // no hit
-      return {hit: hit, normal: normal, color: new Vec(255,255,255), ray: intersection_ray, object:this};     
+      return {hit: hit, normal: normal, color: new Vec(255,255,255), object:this, distance: d};     
     }
     
   }
