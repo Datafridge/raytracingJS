@@ -5,8 +5,6 @@ import {Sphere} from './sphere.mjs';
 import {Light} from './light.mjs';
 import {Box} from './box.mjs';
 
-var counter = 0;
-
 var canvas = document.getElementById("renderCanvas");
 var ctx = canvas.getContext("2d");
 
@@ -18,23 +16,29 @@ var imageData = ctx.createImageData(width, height);
 var objects = [];
 var index;
 
+var depth = 6;
+
 var camera = new Camera(new Vec(0,1,-3), new Vec(0,1,0), new Vec(0,1,0), 700, 700);
-var sphere = new Sphere(new Vec(0,1,14), 2);
-var floor = new Box(new Vec(-10,-2,0), new Vec(10,-0.5,18), 0.2, new Vec(0.1,0.9,0.2), new Vec(0.1,0.9,0.2), 0.2, 100, 0.5);
-var sky = new Box(new Vec(-10,-2,18), new Vec(10,10,19), 0.2, new Vec(0.2,0.3,0.8), new Vec(0.2,0.3,0.8), 0.2, 100, 0.5);
+//var sphere = new Sphere(new Vec(0,1,14), 2, 0.15, new Vec(0.3,1,0.4), new Vec(0.3,1,0.4), 100, 0.2, new Vec(0.3,0.3,0.3), 1.5);
+var sphere2 = new Sphere(new Vec(0,1,14), 2, 0.0, new Vec(0,0,0), new Vec(0,0,0), 100, 0.2, new Vec(1,1,1), 1.0);
+var floor = new Box(new Vec(-10,-2,0), new Vec(10,-1,18), 0.2, new Vec(0.1,0.9,0.2), new Vec(0.1,0.9,0.2), 100, 0.2, new Vec(0.0,0.0,0.0), 1.0);
+var earth = new Box(new Vec(-15,-2,0), new Vec(15,-1,40), 0.2, new Vec(0.5450,0.2705,0.0745), new Vec(0.2725,0.1335,0.0323), 100, 0.2, new Vec(0.0,0.0,0.0), 1.0);
+var sky = new Box(new Vec(-20,-2,40), new Vec(20,30,41), 0.2, new Vec(0.2,0.3,0.8), new Vec(0.2,0.3,0.8), 100, 0.2, new Vec(0.0,0.0,0.0), 1.0);
 //var box2 = new Box(new Vec(-4,-1,0), new Vec(4,0,10));
-var box2 = new Box(new Vec(0.5,-1,0), new Vec(1,0.5,10));
-var box3 = new Box(new Vec(-2,0,13), new Vec(1,2,15));
+//var box2 = new Box(new Vec(0.5,-1,0), new Vec(1,0.5,10));
+//var box3 = new Box(new Vec(-2,0,13), new Vec(1,2,15));
 
 var light = new Light(new Vec(1,4,7), new Vec(1,1,1));
 
-var background = new Vec(255,255,255);
+var background = new Vec(1,1,1);
 
-objects.push(floor);
+//objects.push(floor);
+objects.push(earth);
 objects.push(sky);
 //objects.push(box2);
 //objects.push(box3);
-objects.push(sphere);
+//objects.push(sphere);
+objects.push(sphere2);
 
 
 export function render () 
@@ -43,7 +47,7 @@ export function render ()
 		for (let w = 0; w < width; w++) {
 
 			let ray = camera.primary_ray(w,h);
-			set_color(w,h,trace_ray(ray).multiply(255));
+			set_color(w,h,trace_ray(ray, depth).multiply(255));
 		}
 	}
 
@@ -51,6 +55,7 @@ export function render ()
 }
 
 function trace_ray(ray, depth) {
+	depth--;
 	let intersection = {distance: 100000, color: background};
 	let pixel_color;
 
@@ -61,16 +66,45 @@ function trace_ray(ray, depth) {
 			intersection = intersection_tmp;
 		}
 	});
-	
-	/*if (object_.reflection_ray)
-		reflect_color = trace_ray( get_reflected_ray( original_ray, obj ) )
-	if (object_.refraction_ray != null) {
-		refract_color = trace_ray(object_.refractive_ray)
-	}*/
 
-	let color_phong = intersection.distance === 10000 ? intersection.background : calc_phong(intersection.object, intersection.normal, intersection.intersection_point);
+	if (intersection.distance === 100000) return intersection.color;
+
+	let color_phong = calc_phong(intersection.object, intersection.normal, intersection.intersection_point);
 
 	pixel_color = color_phong;
+
+	if (depth != 0) {	
+		//secondary rays
+		//let v = ray.position.subtract(ray.direction);
+		let v = ray.direction.subtract(ray.position);		
+		let intersection_point = intersection.intersection_point;
+		let normal = intersection.normal;
+		
+		// reflection
+		let reflection_ray = new Ray(intersection_point, (normal.multiply(v.dot(normal)).multiply(2).subtract(v)));
+		let reflection_color = intersection.object.ks.multiply(trace_ray(reflection_ray, depth));
+
+		let n1;
+		let n2;
+
+		// refraction
+		if (intersection.hit === 1) {
+			n1 = 1.0 // air
+			n2 = intersection.object.refraction_index // glass
+		} else if (intersection.hit === -1) {
+			n1 = intersection.object.refraction_index // glass
+			n2 = 1.0 // air
+		}
+
+		let angle1 = v.negative().dot(normal);
+		let angle2 = 1 - Math.pow(n1,2)/Math.pow(n2,2) * (1 - Math.pow((v.dot(normal)),2));
+		let refraction_ray = new Ray(intersection_point, (v.add(normal.multiply(angle1))).multiply(n1/n2).subtract(normal.multiply(angle2)));
+		//let refraction_color = trace_ray(refraction_ray, depth).multiply(intersection.object.refraction_index);
+		let refraction_color = intersection.object.kt.multiply(trace_ray(refraction_ray, depth));
+
+		pixel_color = pixel_color.add(reflection_color).add(refraction_color);
+	}
+
 
 	return pixel_color;
 }
@@ -94,7 +128,6 @@ function calc_phong(object, normal, intersection_point) {
 
 	// composition
 	let shadowray = new Ray(intersection_point,light.position);
-	//let shadowray = new Ray(light.position,intersection_point);
 
 	// check all objects for intersection with the shadow ray
 	let shadow = false;

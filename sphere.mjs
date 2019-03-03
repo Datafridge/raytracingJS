@@ -1,23 +1,21 @@
 import {Vec} from './vector.mjs';
-import { Ray } from './ray.mjs';
 
 class Sphere{
-    constructor(position, radius, Ia, kd, ks, pr, n, ref) {
+    constructor(position, radius, Ia, kd, ks, n, reflection, kt, refraction_index) {
       this.position = position || new Vec(0,1,10);
       this.radius = radius || 1;
       this.Ia = Ia || 0.15  // ambient
       this.kd = kd || new Vec(0.3,1,0.4); // diffuse coefficient
       this.ks = ks || new Vec(0.3,1,0.4); // specular coefficient
-      this.pr = pr || 0.2; // reflectvity
       this.n = n || 100;  // phong shininess
-      this.ref = ref || 0.5; // index of refraction
+      this.reflection = reflection || 0.2; // reflectvity
+      this.kt = kt || new Vec(0.3,0.3,0.3);
+      this.refraction_index = refraction_index || 0.5; // index of refraction
     }
   
     intersect(intersection_ray) {
       let hit = 0;
       let normal = new Vec();
-      let reflection_ray = null;
-      let refraction_ray = null;
 
       let epsilon = 0.001;
       let castray = intersection_ray.direction.subtract(intersection_ray.position);
@@ -39,6 +37,7 @@ class Sphere{
             if(distance_2 < epsilon) {
               intersection_ray.distance = distance_2;
               normal = castray.multiply(intersection_ray.distance).subtract(this.position).unit();
+              console.log("inside");
               return {hit: -1, normal: normal, object:this};
             }
           } else {
@@ -47,12 +46,10 @@ class Sphere{
               
               hit = 1;
 
-              let intersection_point = intersection_ray.position.add(((intersection_ray.direction.subtract(intersection_ray.position)).multiply(intersection_ray.distance)).subtract(0.0001));
+              let intersection_point = intersection_ray.position.add(((intersection_ray.direction.subtract(intersection_ray.position)).multiply(intersection_ray.distance)).subtract(0.001));
               normal = intersection_point.subtract(this.position).unit();
-              
-              //calculate reflection ray
-              reflection_ray = new Ray(intersection_point, intersection_ray.direction.subtract(normal.multiply(intersection_ray.direction.dot(normal)).multiply(2)).unit());
-              return {hit: 1, normal: normal, reflection_ray: reflection_ray, intersection_point: intersection_point, distance: intersection_ray.distance, object:this}; 
+
+              return {hit: hit, normal: normal, intersection_point: intersection_point, distance: intersection_ray.distance, object:this}; 
           }
         } 
       } 

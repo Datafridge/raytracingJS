@@ -1,23 +1,21 @@
 import {Vec} from './vector.mjs';
-import { Ray } from './ray.mjs';
 
 class Box{
-    constructor(min, max, Ia, kd, ks, pr, n, ref) {
+    constructor(min, max, Ia, kd, ks, n, reflection, kt, refraction_index) {
       this.min = min || new Vec(-1,0,6); // A
       this.max = max || new Vec(1,2,8); // B
       this.Ia = Ia || 0.2  // ambient
       this.kd = kd || new Vec(0.2,0.3,0.8); // diffuse coefficient
       this.ks = ks || new Vec(0.2,0.3,0.8); // specular coefficient
-      this.pr = pr || 0.2; // reflectvity
       this.n = n || 100;  // phong shininess
-      this.ref = ref || 0.5; // index of refraction
+      this.reflection = reflection || 0.0; // reflectvity
+      this.kt = kt || new Vec(0.3,0.3,0.3);
+      this.refraction_index = refraction_index || 0.5; // index of refraction
     }
   
     intersect(intersection_ray) {
       let hit = 0;
       let normal = new Vec();
-      let reflection_ray = null;
-      let refraction_ray = null;
 
       let O = intersection_ray.position;
       let D = intersection_ray.direction.subtract(intersection_ray.position);
@@ -46,7 +44,7 @@ class Box{
         tYmax = (A.y - O.y) / D.y; 
       }
 
-      if ( (tXmin > tYmax) || (tYmin > tXmax) ) {return {hit: 0, distance: -1};}
+      if ( (tXmin > tYmax) || (tYmin > tXmax) ) {return {hit: 0, distance: -1, object:this};}
       if ( tYmin > tXmin ) tXmin = tYmin;
       if ( tYmax < tXmax ) tXmax = tYmax; 
 
@@ -58,7 +56,7 @@ class Box{
         tZmax = (A.z - O.z) / D.z; 
       }
 
-      if ( (tXmin > tZmax) || (tZmin > tXmax)) {return {hit: 0, distance: -1};}
+      if ( (tXmin > tZmax) || (tZmin > tXmax)) {return {hit: 0, distance: -1, object:this};}
       if ( tZmin > tXmin ) tXmin = tZmin;
       if ( tZmax < tXmax ) tXmax = tZmax; 
 
