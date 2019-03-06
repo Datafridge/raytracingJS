@@ -4,25 +4,76 @@
 		<title>Fresnel Rendering</title>
 		<link rel="stylesheet" type="text/css" href="style.css">
 		<meta charset="utf-8"/>
-		<!--<script src="render.mjs" type="module"></script>-->
 		<script type="module">
 			import {render} from './render.mjs'
-			document.querySelector('#renderbtn').addEventListener('click', render)
+			document.querySelector('#object-select').addEventListener('change', render)
+			document.querySelector('#n1In').addEventListener('change', render)
+			document.querySelector('#n2In').addEventListener('change', render)
 		</script>
+		
 	</head> 
-	<body>
+	<body onload="initialValue()">
+			<script>	
+					function initialValue() {
+						document.getElementById("n1-value-text").innerHTML = document.getElementById("n1In").value;
+						document.getElementById("n2-value-text").innerHTML = document.getElementById("n2In").value;
+					}
+
+					function changeN1Value(id) {
+						document.getElementById("n1-value-text").innerHTML = id.value;
+					}
+
+					function changeN2Value(id) {
+						document.getElementById("n2-value-text").innerHTML = id.value;
+					}
+					</script>
 		<div>
-			<div class="navigation">
-				<select class="select">
-					<option value="sphere">sphere</option>
-					<option value="box">box</option>
-				</select>
-				<select class="select">
-						<option value="chess pattern">chess pattern</option>
-						<option value="earth and sky">earth and sky</option>
-				</select> 
-				<input type="range" min="1" max="100" value="50" class="slider" id="index">
-				<button id="renderbtn">render</button> 
+			<div class="control-center">
+				Fresnel Renderer
+				<ul>
+					<li>
+						<div class="row-container">
+							<div>
+								Object
+							</div>
+							<div>
+								<select class="select" id="object-select">
+								<option value="sphere">sphere</option>
+								<option value="box">box</option>
+							</select>
+							</div>
+							<div>
+									
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="row-container">
+							<div>
+								N1 - Object
+							</div>
+							<div>
+								<input type="range" min="1.0" max="2.8" value="1.0" step="0.05" class="slider" id="n1In" oninput="changeN1Value(this)">
+							</div>
+							<div>
+								<p id="n1-value-text"></p>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="row-container">
+							<div>
+								N2 - Enviroment
+							</div>
+							<div>
+								<input type="range" min="1.0" max="2.8" value="1.8" step="0.05" class="slider" id="n2In" oninput="changeN2Value(this)">
+							</div>
+							<div>
+								<p id="n2-value-text"></p>
+							</div>
+						</div>
+					</li>
+				</ul>
 			</div>
 			<canvas id="renderCanvas" width="700" height="700" style="border:1px solid #d3d3d3;">
 			Your browser does not support the HTML5 canvas tag.</canvas>

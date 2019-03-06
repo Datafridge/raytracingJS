@@ -1,9 +1,10 @@
 import {Vec} from './vector.mjs';
 
 class Box{
-    constructor(min, max, Ia, kd, ks, n, reflection, kt, refraction_index) {
+    constructor(min, max, Ia, kd, ks, n, reflection, kt, refraction_index, name) {
       this.min = min || new Vec(-1,0,6); // A
       this.max = max || new Vec(1,2,8); // B
+      this.position = (this.min.add(this.max)).divide(2);
       this.Ia = Ia || 0.2  // ambient
       this.kd = kd || new Vec(0.2,0.3,0.8); // diffuse coefficient
       this.ks = ks || new Vec(0.2,0.3,0.8); // specular coefficient
@@ -11,6 +12,7 @@ class Box{
       this.reflection = reflection || 0.0; // reflectvity
       this.kt = kt || new Vec(0.3,0.3,0.3);
       this.refraction_index = refraction_index || 0.5; // index of refraction
+      this.name = name || "box";
     }
   
     intersect(intersection_ray) {

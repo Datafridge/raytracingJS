@@ -4,7 +4,7 @@
     display: block;
 }
 
-.navigation {
+.control-center {
     padding: 0;
     margin: auto;
     display: block;
@@ -34,6 +34,17 @@
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.row-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
 }
 
   .black   { background-color: #000; }
