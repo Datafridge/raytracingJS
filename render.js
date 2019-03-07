@@ -1,10 +1,3 @@
-import {Camera} from './camera.mjs';
-import {Vec} from './vector.mjs';
-import {Ray} from './ray.mjs';
-import {Sphere} from './sphere.mjs';
-import {Light} from './light.mjs';
-import {Box} from './box.mjs';
-
 var canvas = document.getElementById("renderCanvas");
 var ctx = canvas.getContext("2d");
 
@@ -60,7 +53,7 @@ var light = new Light(	new Vec(1,4,7),
 
 var background = new Vec(1,1,1);
 
-export function render () 
+function render () 
 {
 
 	// load all objects, depending on which object is selected

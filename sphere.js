@@ -1,5 +1,3 @@
-import {Vec} from './vector.mjs';
-
 class Sphere{
     constructor(position, radius, Ia, kd, ks, n, reflection, kt, refraction_index, name) 
     {
@@ -81,6 +79,3 @@ class Sphere{
 
     return {solution: true, x0: x0, x1: x1};
   } 
-  
-  export { Sphere };
-  

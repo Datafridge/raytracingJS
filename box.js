@@ -1,5 +1,3 @@
-import {Vec} from './vector.mjs';
-
 class Box{
     constructor(min, max, Ia, kd, ks, n, reflection, kt, refraction_index, name) 
     {
@@ -114,6 +112,3 @@ class Box{
     }
     
   }
-  
-  export { Box };
-  

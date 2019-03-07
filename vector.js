@@ -1,6 +1,6 @@
 // derived from https://gist.github.com/winduptoy/a1aa09c3499e09edbd33
 // thanks a lot to winduptoy
-export default class Vec{
+class Vec{
   constructor(x, y, z) {
     this.x = x || 0;
     this.y = y || 0;
@@ -187,5 +187,3 @@ export default class Vec{
     return a.angleTo(b);
   }
 }
-
-export { Vec };

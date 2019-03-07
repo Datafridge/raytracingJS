@@ -1,7 +1,4 @@
-import {Vec} from './vector.mjs';
-import {Ray} from './ray.mjs';
- 
-export default class Camera
+class Camera
 {
   constructor(eye, at, up, resolution_width, resolution_height)
   {
@@ -35,6 +32,3 @@ export default class Camera
     \ninc_x: x:${this.inc_x.x} y:${this.inc_x.y} z:${this.inc_x.z} \ninc_y: x:${this.inc_y.x} y:${this.inc_y.y} z:${this.inc_y.z}`);
   }
 }
-  
-export { Camera }
-  

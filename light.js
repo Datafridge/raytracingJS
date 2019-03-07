@@ -1,5 +1,3 @@
-import {Vec} from './vector.mjs';
-
 class Light
 {
   constructor(position, color) 
@@ -8,5 +6,3 @@ class Light
     this.color = color || new Vec(1,1,1);
   } 
 }
-  
-export { Light };
