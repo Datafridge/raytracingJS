@@ -1,6 +1,5 @@
-// Provides a simple 3D vec class. Vec operations can be done using member
-// functions, which return new vecs, or static functions, which reuse
-// existing vecs to avoid generating garbage.
+// derived from https://gist.github.com/winduptoy/a1aa09c3499e09edbd33
+// thanks a lot to winduptoy
 export default class Vec{
   constructor(x, y, z) {
     this.x = x || 0;

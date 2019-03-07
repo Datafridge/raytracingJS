@@ -1,8 +1,10 @@
 import {Vec} from './vector.mjs';
 import {Ray} from './ray.mjs';
  
-export default class Camera{
-  constructor(eye, at, up, resolution_width, resolution_height) {
+export default class Camera
+{
+  constructor(eye, at, up, resolution_width, resolution_height)
+  {
     this.eye = eye || new Vec(0,1,-8);
     this.at = at || new Vec(0,1,0);
     this.up = up || new Vec(0,1,0);
@@ -17,14 +19,15 @@ export default class Camera{
     this.inc_x = (this.u.multiply(2).multiply(this.height/2)).divide(this.resolution.height);
   }
 
-  primary_ray(x, y){
+  primary_ray(x, y)
+  {
     let viewplane_point = this.zero.add(this.inc_x.multiply(x)).add(this.inc_y.multiply(y));
-    //if((x===350&&y===350)||(x===0&&y===0)||(x===0&&y===699)||(x===699&&y===0)||(x===699&&y===699)) {viewplane_point.print();}
     let ray = new Ray(this.eye, viewplane_point);
     return ray;
   }
 
-  print(){
+  print()
+  {
     console.log(`camera \neye: x:${this.eye.x} y:${this.eye.y} z:${this.eye.z} \nat: x:${this.at.x} y:${this.at.y} z:${this.at.z}
     \nup: x:${this.up.x} y:${this.up.y} z:${this.up.z} \ndir: x:${this.dir.x} y:${this.dir.y} z:${this.dir.z}
     \nresolution: width:${this.resolution.width} height:${this.resolution.height} 
